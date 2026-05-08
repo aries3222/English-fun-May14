@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May 14 Eng Dict - The Dancing Fly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 優先使用 Comic Sans MS 處理英文，港蘋體 (PingFang HK) 處理中文 */
+        body {
+            font-family: 'Comic Sans MS', 'Comic Sans', "PingFang HK", "PingFang TC", "Microsoft JhengHei", cursive, sans-serif;
+            background-color: #f0fdf4; /* 淺綠色背景 */
+        }
+
+        /* 針對中文字符強制使用港蘋體 */
+        :lang(zh-Hant), .chinese-text {
+            font-family: "PingFang HK", "PingFang TC", "Microsoft JhengHei", sans-serif;
+        }
+
+        /* 確保所有輸入框與按鈕也套用 Comic Sans 與 港蘋體 */
+        button, input, select, textarea {
+            font-family: 'Comic Sans MS', 'Comic Sans', "PingFang HK", "PingFang TC", sans-serif;
+        }
+
+        .card-bounce:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        .btn-mode {
+            @apply px-4 py-2 rounded-full font-bold transition duration-300 text-lg sm:text-xl whitespace-nowrap;
+        }
+        .active-blue { @apply bg-blue-600 text-white shadow-lg; }
+        .inactive-blue { @apply bg-blue-100 text-blue-600 hover:bg-blue-200; }
+        .active-purple { @apply bg-purple-600 text-white shadow-lg; }
+        .inactive-purple { @apply bg-purple-100 text-purple-600 hover:bg-purple-200; }
+        .active-green { @apply bg-green-600 text-white shadow-lg; }
+        .inactive-green { @apply bg-green-100 text-green-600 hover:bg-green-200; }
+        .active-orange { @apply bg-orange-600 text-white shadow-lg; }
+        .inactive-orange { @apply bg-orange-100 text-orange-600 hover:bg-orange-200; }
+
+        /* 重組模式樣式 - 字母塊 */
+        .scramble-btn {
+            @apply bg-white border-4 border-green-300 font-extrabold p-4 rounded-3xl shadow-md hover:bg-green-50 hover:border-green-500 active:scale-90 transition-all text-green-700 flex items-center justify-center;
+            font-size: 60pt; 
+            font-family: 'Comic Sans MS', 'Comic Sans', sans-serif;
+        }
+        .scramble-placeholder {
+            @apply border-b-8 border-green-400 font-extrabold flex items-center justify-center mx-2 text-green-800;
+            font-size: 60pt;
+            min-width: 4.5rem;
+            font-family: 'Comic Sans MS', 'Comic Sans', sans-serif;
+        }
+        /* 句子模式下的單詞塊 */
+        .word-block-btn {
+            @apply bg-white border-4 border-green-300 font-extrabold px-8 py-4 rounded-3xl shadow-md hover:bg-green-50 hover:border-green-500 active:scale-90 transition-all text-green-700;
+            font-size: 50px;
+            font-family: 'Comic Sans MS', 'Comic Sans', sans-serif;
+        }
+        .word-block-placeholder {
+            @apply border-b-8 border-green-400 font-extrabold px-4 mx-2 text-green-800 min-w-[6rem] text-center;
+            font-size: 50px;
+            font-family: 'Comic Sans MS', 'Comic Sans', sans-serif;
+        }
+
+        .section-card {
+            @apply cursor-pointer p-8 rounded-3xl border-4 transition-all duration-300 text-center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4">
+
+    <header class="text-center my-6">
+        <h1 class="text-5xl font-extrabold text-green-700 tracking-tight">May 14 Eng Dict</h1>
+        <p class="text-xl text-gray-600 mt-2 font-bold">The Dancing Fly</p>
+    </header>
+
+    <div id="game-container" class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl p-8 border-4 border-green-100">
+        
+        <!-- 選區畫面 -->
+        <div id="selection-screen" class="space-y-8">
+            <h2 class="text-3xl font-bold text-center text-gray-700 mb-8 chinese-text">請選擇練習部分：</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div onclick="selectSection('A')" class="section-card border-orange-200 bg-orange-50 hover:border-orange-500 hover:shadow-xl group">
+                    <div class="text-6xl mb-4 group-hover:scale-110 transition">🐦</div>
+                    <h3 class="text-xl font-bold text-orange-700 uppercase">Part A</h3>
+                    <p class="text-orange-600 mt-1 text-base chinese-text">Sentences</p>
+                </div>
+                <div onclick="selectSection('B')" class="section-card border-blue-200 bg-blue-50 hover:border-blue-500 hover:shadow-xl group">
+                    <div class="text-6xl mb-4 group-hover:scale-110 transition">🏠</div>
+                    <h3 class="text-xl font-bold text-blue-700 uppercase">Part B</h3>
+                    <p class="text-blue-600 mt-1 text-base chinese-text">Home Things</p>
+                </div>
+                <div onclick="selectSection('C')" class="section-card border-pink-200 bg-pink-50 hover:border-pink-500 hover:shadow-xl group">
+                    <div class="text-6xl mb-4 group-hover:scale-110 transition">🏃</div>
+                    <h3 class="text-xl font-bold text-pink-700 uppercase">Part C</h3>
+                    <p class="text-pink-600 mt-1 text-base chinese-text">Recited</p>
+                </div>
+                <div onclick="selectSection('D')" class="section-card border-green-200 bg-green-50 hover:border-green-500 hover:shadow-xl group">
+                    <div class="text-6xl mb-4 group-hover:scale-110 transition">🎁</div>
+                    <h3 class="text-xl font-bold text-green-700 uppercase">Part D</h3>
+                    <p class="text-green-600 mt-1 text-base chinese-text">Bonus Home</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 遊戲主體 -->
+        <div id="main-game" class="hidden">
+            <div class="flex items-center justify-between mb-8">
+                <button onclick="backToSelection()" class="text-blue-600 text-xl font-bold hover:underline flex items-center chinese-text">
+                    ← 返回選擇
+                </button>
+                <span id="current-section-label" class="bg-gray-100 px-6 py-2 rounded-full text-lg font-bold text-gray-500 uppercase">Part B</span>
+            </div>
+
+            <!-- 模式切換 -->
+            <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <button onclick="setMode('study')" id="study-btn" class="btn-mode active-blue chinese-text">📖 學習</button>
+                <button onclick="setMode('quiz')" id="quiz-btn" class="btn-mode inactive-purple chinese-text">❓ 選擇</button>
+                <button onclick="setMode('scramble')" id="scramble-btn" class="btn-mode inactive-green chinese-text">🧩 重組</button>
+                <button onclick="setMode('spell')" id="spell-btn" class="btn-mode inactive-orange chinese-text">✍️ 拼字</button>
+            </div>
+
+            <!-- 1. 學習模式 (容器) -->
+            <div id="study-mode" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+
+            <!-- 2. 選擇模式 -->
+            <div id="quiz-mode" class="hidden text-center">
+                <div class="flex justify-between items-center mb-6">
+                    <span id="quiz-score" class="text-2xl font-bold text-purple-600 chinese-text">得分: 0</span>
+                    <button onclick="playTargetWord()" class="bg-yellow-400 p-5 rounded-full hover:scale-110 transition shadow-lg text-2xl">🔊</button>
+                </div>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+
+            <!-- 3. 重組模式 -->
+            <div id="scramble-mode" class="hidden text-center">
+                <div class="flex justify-between items-center mb-6">
+                    <span id="scramble-score" class="text-2xl font-bold text-green-600 chinese-text">得分: 0</span>
+                    <button onclick="playTargetWord()" class="bg-yellow-400 p-5 rounded-full hover:scale-110 transition shadow-lg text-2xl">🔊</button>
+                </div>
+                <div class="text-8xl mb-10" id="scramble-emoji"></div>
+                <div id="scramble-slots" class="flex justify-center flex-wrap gap-4 mb-16 min-h-[120px] items-end"></div>
+                <div id="scramble-letters" class="flex justify-center flex-wrap gap-6 mb-12"></div>
+                <button onclick="resetScramble()" class="px-10 py-3 bg-gray-100 text-gray-600 rounded-full text-xl font-bold hover:bg-gray-200 chinese-text">重新排列</button>
+            </div>
+
+            <!-- 4. 拼字模式 -->
+            <div id="spell-mode" class="hidden text-center">
+                <div class="flex justify-between items-center mb-6">
+                    <span id="spell-score" class="text-2xl font-bold text-orange-600 chinese-text">得分: 0</span>
+                    <button onclick="playTargetWord()" class="bg-yellow-400 p-5 rounded-full hover:scale-110 transition shadow-lg text-2xl">🔊</button>
+                </div>
+                <div class="text-9xl mb-10" id="spell-emoji"></div>
+                <input type="text" id="spell-input" autocomplete="off" class="w-full max-w-2xl p-6 text-5xl text-center border-4 border-orange-200 rounded-3xl focus:border-orange-500 outline-none font-bold text-orange-700 shadow-sm" placeholder="在此輸入...">
+                <div class="mt-12 flex justify-center gap-6">
+                    <button onclick="checkSpelling()" class="px-16 py-6 bg-orange-500 text-white rounded-3xl font-bold text-4xl hover:bg-orange-600 transition shadow-lg active:scale-95 chinese-text">檢查答案</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 反饋浮窗 -->
+        <div id="feedback" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-12 py-6 rounded-3xl text-white font-bold text-4xl opacity-0 pointer-events-none transition-all duration-300 z-50 shadow-2xl chinese-text"></div>
+    </div>
+
+    <script>
+        const partA = [
+            { word: "There was a bird.", emoji: "🐦" },
+            { word: "It was dancing on the window.", emoji: "🪟" },
+            { word: "It flew into the house.", emoji: "🏠" },
+            { word: "It danced on the door.", emoji: "🚪" },
+            { word: "I got the bread.", emoji: "🍞" },
+            { word: "The birds flew over my head.", emoji: "🙆" },
+            { word: "Three monkeys swam in the river.", emoji: "🐒" }
+        ];
+
+        const partB = [
+            { word: "a desk", emoji: "📂" },
+            { word: "a teapot", emoji: "🫖" },
+            { word: "a fan", emoji: "🌀" },
+            { word: "a bed", emoji: "🛏️" },
+            { word: "a lamp", emoji: "💡" },
+            { word: "a chair", emoji: "🪑" },
+            { word: "a table", emoji: "🍽️" },
+            { word: "a mat", emoji: "🧹" },
+            { word: "a shelf", emoji: "📚" },
+            { word: "a sofa", emoji: "🛋️" }
+        ];
+
+        const partC = [
+            { word: "Dan is a running boy.", emoji: "🏃" },
+            { word: "I am jumping over the table.", emoji: "🦘" },
+            { word: "The monkey went into the box.", emoji: "📦" }
+        ];
+
+        const partD = [
+            { word: "a cup", emoji: "☕" },
+            { word: "a box", emoji: "📦" },
+            { word: "a door", emoji: "🚪" },
+            { word: "a clock", emoji: "⏰" },
+            { word: "a TV", emoji: "📺" },
+            { word: "a bag", emoji: "🎒" },
+            { word: "a pen", emoji: "🖊️" },
+            { word: "a book", emoji: "📖" },
+            { word: "a bin", emoji: "🗑️" },
+            { word: "a rug", emoji: "🧶" },
+            { word: "a key", emoji: "🔑" },
+            { word: "a pan", emoji: "🍳" },
+            { word: "a pot", emoji: "🍲" },
+            { word: "a jar", emoji: "🍯" },
+            { word: "a bowl", emoji: "🥣" },
+            { word: "a fork", emoji: "🍴" },
+            { word: "a spoon", emoji: "🥄" },
+            { word: "a plate", emoji: "🍽️" },
+            { word: "a mop", emoji: "🧹" },
+            { word: "a phone", emoji: "📱" }
+        ];
+
+        let currentSection = 'B';
+        let currentMode = 'study';
+        let activeData = [];
+        let score = 0;
+        let currentTarget = null;
+        let scrambleSelectedIndices = [];
+
+        function selectSection(type) {
+            currentSection = type;
+            if (type === 'A') activeData = partA;
+            else if (type === 'B') activeData = partB;
+            else if (type === 'C') activeData = partC;
+            else activeData = partD;
+            
+            document.getElementById('current-section-label').innerText = `Part ${type}`;
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('main-game').classList.remove('hidden');
+            setMode('study');
+        }
+
+        function backToSelection() {
+            document.getElementById('main-game').classList.add('hidden');
+            document.getElementById('selection-screen').classList.remove('hidden');
+            window.speechSynthesis.cancel();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            score = 0;
+            updateModeUI();
+            
+            const modes = ['study-mode', 'quiz-mode', 'scramble-mode', 'spell-mode'];
+            modes.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            const currentEl = document.getElementById(`${mode}-mode`);
+            if (currentEl) {
+                currentEl.classList.remove('hidden');
+            }
+
+            if (mode === 'study') initStudy();
+            else if (mode === 'quiz') nextQuiz();
+            else if (mode === 'scramble') nextScramble();
+            else if (mode === 'spell') nextSpell();
+        }
+
+        function updateModeUI() {
+            const btnMap = { study: 'study-btn', quiz: 'quiz-btn', scramble: 'scramble-btn', spell: 'spell-btn' };
+            const colors = { study: 'blue', quiz: 'purple', scramble: 'green', spell: 'orange' };
+            Object.keys(btnMap).forEach(m => {
+                const el = document.getElementById(btnMap[m]);
+                if (el) el.className = `btn-mode ${m === currentMode ? 'active-' + colors[m] : 'inactive-' + colors[m]}`;
+            });
+        }
+
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.7;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playTargetWord() {
+            if (currentTarget) speak(currentTarget.word);
+        }
+
+        function initStudy() {
+            const container = document.getElementById('study-mode');
+            container.innerHTML = '';
+            
+            const isSentenceMode = (currentSection === 'A' || currentSection === 'C');
+            
+            if (isSentenceMode) {
+                const fullTextBtn = document.createElement('div');
+                fullTextBtn.className = 'bg-pink-100 p-8 rounded-3xl text-center cursor-pointer border-4 border-pink-400 mb-2 md:col-span-2';
+                fullTextBtn.innerHTML = `<div class="text-4xl font-extrabold text-pink-700 chinese-text">🔊 朗讀所有句子</div>`;
+                fullTextBtn.onclick = () => {
+                    const fullText = activeData.map(i => i.word).join(' ');
+                    speak(fullText);
+                };
+                container.appendChild(fullTextBtn);
+            }
+
+            activeData.forEach(item => {
+                const card = document.createElement('div');
+                // 如果是句子模式，強迫寬度為 100% (md:col-span-2)
+                const colClass = isSentenceMode ? 'md:col-span-2' : '';
+                const fontSizeClass = isSentenceMode ? 'text-4xl' : 'text-2xl';
+                const paddingClass = isSentenceMode ? 'p-10' : 'p-6';
+
+                card.className = `bg-blue-50 ${paddingClass} rounded-3xl flex items-center gap-6 cursor-pointer card-bounce border-4 border-transparent hover:border-blue-400 ${colClass}`;
+                card.innerHTML = `<div class="text-6xl">${item.emoji}</div><div class="${fontSizeClass} font-bold text-blue-800">${item.word}</div>`;
+                card.onclick = () => speak(item.word);
+                container.appendChild(card);
+            });
+        }
+
+        function nextQuiz() {
+            const container = document.getElementById('quiz-options');
+            if(!container) return;
+            container.innerHTML = '';
+            document.getElementById('quiz-score').innerText = `得分: ${score}`;
+            currentTarget = activeData[Math.floor(Math.random() * activeData.length)];
+            
+            let choices = [...activeData].sort(() => 0.5 - Math.random()).slice(0, 4);
+            if (!choices.find(c => c.word === currentTarget.word)) choices[0] = currentTarget;
+            choices.sort(() => 0.5 - Math.random());
+
+            choices.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-white border-4 border-purple-100 p-6 rounded-2xl text-2xl font-bold text-purple-700 hover:bg-purple-50';
+                btn.innerText = item.word;
+                btn.onclick = () => {
+                    if (item.word === currentTarget.word) {
+                        score++;
+                        showFeedback("答對了！🌟", "bg-green-500");
+                        speak("Correct!");
+                        setTimeout(nextQuiz, 1200);
+                    } else {
+                        showFeedback("再想一想！", "bg-red-500");
+                        speak("Try again");
+                    }
+                };
+                container.appendChild(btn);
+            });
+            setTimeout(playTargetWord, 500);
+        }
+
+        let scrambleChunks = [];
+
+        function nextScramble() {
+            const scoreLabel = document.getElementById('scramble-score');
+            if(scoreLabel) scoreLabel.innerText = `得分: ${score}`;
+            currentTarget = activeData[Math.floor(Math.random() * activeData.length)];
+            document.getElementById('scramble-emoji').innerText = currentTarget.emoji;
+            
+            scrambleSelectedIndices = [];
+            
+            if (currentSection === 'A' || currentSection === 'C') {
+                let text = currentTarget.word;
+                let tokens = text.match(/\w+|[^\w\s]/g) || [];
+                scrambleChunks = tokens;
+            } else {
+                scrambleChunks = currentTarget.word.toLowerCase().replace(/ /g, '').split('');
+            }
+            
+            renderScramble();
+            setTimeout(playTargetWord, 500);
+        }
+
+        function renderScramble() {
+            const slotsContainer = document.getElementById('scramble-slots');
+            const lettersContainer = document.getElementById('scramble-letters');
+            if(!slotsContainer || !lettersContainer) return;
+
+            slotsContainer.innerHTML = '';
+            lettersContainer.innerHTML = '';
+
+            const isSentenceMode = (currentSection === 'A' || currentSection === 'C');
+            const placeholderClass = isSentenceMode ? "word-block-placeholder" : "scramble-placeholder";
+            const btnClass = isSentenceMode ? "word-block-btn" : "scramble-btn";
+
+            scrambleChunks.forEach((_, i) => {
+                const slot = document.createElement('div');
+                slot.className = placeholderClass;
+                if (scrambleSelectedIndices[i] !== undefined) {
+                    slot.innerText = scrambleChunks[scrambleSelectedIndices[i]];
+                }
+                slotsContainer.appendChild(slot);
+            });
+
+            let available = scrambleChunks.map((val, idx) => ({val, idx}))
+                .filter(item => !scrambleSelectedIndices.includes(item.idx));
+            
+            available.sort(() => 0.5 - Math.random());
+
+            available.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = btnClass;
+                btn.innerText = item.val;
+                btn.onclick = () => {
+                    scrambleSelectedIndices.push(item.idx);
+                    renderScramble();
+                    checkScrambleResult();
+                };
+                lettersContainer.appendChild(btn);
+            });
+        }
+
+        function checkScrambleResult() {
+            if (scrambleSelectedIndices.length === scrambleChunks.length) {
+                const isSentenceMode = (currentSection === 'A' || currentSection === 'C');
+                let result = "";
+                
+                if (isSentenceMode) {
+                    scrambleSelectedIndices.forEach((idx, i) => {
+                        let token = scrambleChunks[idx];
+                        if (i > 0 && /\w/.test(token) && /\w/.test(scrambleChunks[scrambleSelectedIndices[i-1]])) {
+                            result += " ";
+                        }
+                        result += token;
+                    });
+                    result = result.replace(/\s+([,.?!])/g, '$1');
+                } else {
+                    result = scrambleSelectedIndices.map(i => scrambleChunks[i]).join('');
+                }
+
+                const targetText = currentTarget.word;
+
+                if (result.toLowerCase() === targetText.toLowerCase() || result === targetText) {
+                    score++;
+                    showFeedback("答對了！🌟", "bg-green-500");
+                    speak("Well done!");
+                    setTimeout(nextScramble, 1500);
+                } else {
+                    showFeedback("不對喔，重試！", "bg-red-500");
+                    setTimeout(resetScramble, 800);
+                }
+            }
+        }
+
+        function resetScramble() {
+            scrambleSelectedIndices = [];
+            renderScramble();
+        }
+
+        function nextSpell() {
+            const scoreLabel = document.getElementById('spell-score');
+            if(scoreLabel) scoreLabel.innerText = `得分: ${score}`;
+            currentTarget = activeData[Math.floor(Math.random() * activeData.length)];
+            document.getElementById('spell-emoji').innerText = currentTarget.emoji;
+            const input = document.getElementById('spell-input');
+            if(input) {
+                input.value = '';
+                input.focus();
+            }
+            setTimeout(playTargetWord, 500);
+        }
+
+        function checkSpelling() {
+            const inputEl = document.getElementById('spell-input');
+            if(!inputEl) return;
+            const input = inputEl.value.trim();
+            const cleanInput = input.toLowerCase().replace(/[.,?!"' ]/g, '');
+            const cleanTarget = currentTarget.word.toLowerCase().replace(/[.,?!"' ]/g, '');
+            
+            if (cleanInput === cleanTarget) {
+                score++;
+                const scoreLabel = document.getElementById('spell-score');
+                if(scoreLabel) scoreLabel.innerText = `得分: ${score}`;
+                showFeedback("完美！🎯", "bg-green-500");
+                speak("Perfect!");
+                setTimeout(nextSpell, 1500);
+            } else {
+                showFeedback("拼錯了，再聽聽看！", "bg-red-500");
+                speak("Listen again");
+            }
+        }
+
+        document.getElementById('spell-input')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkSpelling();
+        });
+
+        function showFeedback(text, color) {
+            const el = document.getElementById('feedback');
+            if(!el) return;
+            el.innerText = text;
+            el.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-12 py-6 rounded-3xl text-white font-bold text-4xl transition-all duration-300 z-50 shadow-2xl ${color} opacity-100 scale-110 chinese-text`;
+            setTimeout(() => {
+                el.classList.replace('opacity-100', 'opacity-0');
+                el.classList.remove('scale-110');
+            }, 1000);
+        }
+
+        window.onload = () => {
+            window.speechSynthesis.getVoices();
+        };
+    </script>
+</body>
+</html>
